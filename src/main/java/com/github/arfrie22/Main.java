@@ -58,13 +58,18 @@ public class Main {
                 Thread.sleep(100);
                 port.readBytes(buf, 64, 0);
                 int protocolVersion = (Byte.toUnsignedInt(buf[1]) << 8) | Byte.toUnsignedInt(buf[0]);
-                System.out.println(protocolVersion);
+                System.out.println("Protocol version: " + protocolVersion);
 
                 port.writeBytes(new byte[]{(byte) 0xFD}, 1);
                 Thread.sleep(100);
                 port.readBytes(buf, 64, 0);
                 int teamNumber = (Byte.toUnsignedInt(buf[1]) << 24) | (Byte.toUnsignedInt(buf[2]) << 16) | (Byte.toUnsignedInt(buf[3]) << 8) | Byte.toUnsignedInt(buf[4]);
-                System.out.println(teamNumber);
+                System.out.println("Team number: " + teamNumber);
+
+                // port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x01, (byte) 0xFF, 0x10, (byte) 0xA0}, 7);
+                port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x03, 0x03}, 5);
+                port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x05, (byte) 0x05}, 5);
+                port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x06, (byte) 0xA0}, 5);
             }
         }
     }
