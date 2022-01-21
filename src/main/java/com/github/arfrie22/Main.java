@@ -72,5 +72,7 @@ public class Main {
                 port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x06, (byte) 0xA0}, 5);
             }
         }
+
+
     }
 }
