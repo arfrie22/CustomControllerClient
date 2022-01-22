@@ -48,6 +48,7 @@ public class Main {
         }));
 
         clientConnectedEntry.setBoolean(true);
+        SerialPort controllerPort = null;
 
         SerialPort[] ports = SerialPort.getCommPorts();
         for (SerialPort port : ports) {
@@ -66,13 +67,20 @@ public class Main {
                 int teamNumber = (Byte.toUnsignedInt(buf[1]) << 24) | (Byte.toUnsignedInt(buf[2]) << 16) | (Byte.toUnsignedInt(buf[3]) << 8) | Byte.toUnsignedInt(buf[4]);
                 System.out.println("Team number: " + teamNumber);
 
-                // port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x01, (byte) 0xFF, 0x10, (byte) 0xA0}, 7);
-                port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x03, 0x03}, 5);
-                port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x05, (byte) 0x05}, 5);
-                port.writeBytes(new byte[]{0x05, 0x03, 0x00, 0x06, (byte) 0xA0}, 5);
+                port.closePort();
+                controllerPort = port;
             }
         }
 
-
+        if (controllerPort != null) {
+            controllerPort.openPort();
+            NTSerialDataListener ntSerialDataListener = new NTSerialDataListener(responseEntry, hasResponseEntry);
+            controllerPort.addDataListener(ntSerialDataListener);
+            while (ntSerialDataListener.isConnected()) {
+                controllerPort.writeBytes(new byte[]{(byte) 0x01}, 1);
+            }
+            controllerPort.removeDataListener();
+            controllerPort.closePort();
+        }
     }
 }
