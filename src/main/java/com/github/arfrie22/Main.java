@@ -15,14 +15,6 @@ public class Main {
         inst.startClientTeam(467);
         inst.startDSClient();
         inst.startClient("localhost");
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException ex) {
-            System.out.println("interrupted");
-            return;
-        }
-
-        System.out.println(inst.isConnected());
         NetworkTable controllerTable = inst.getTable("controller");
 
         NetworkTableEntry robotConnectedEntry = controllerTable.getEntry("robotConnected"); // bool
@@ -46,6 +38,16 @@ public class Main {
                 e.printStackTrace();
             }
         }));
+
+        try {
+            // inst.wait(100);
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            System.out.println("interrupted");
+            return;
+        }
+
+        System.out.println(inst.isConnected());
 
         clientConnectedEntry.setBoolean(true);
         SerialPort controllerPort = null;
@@ -72,12 +74,19 @@ public class Main {
             }
         }
 
+        commandEntry.setRaw(new byte[]{0x05, 0x03, 0x00, 0x03, 0x03});
+        hasCommandEntry.setBoolean(true);
+
         if (controllerPort != null) {
             controllerPort.openPort();
             NTSerialDataListener ntSerialDataListener = new NTSerialDataListener(responseEntry, hasResponseEntry);
             controllerPort.addDataListener(ntSerialDataListener);
             while (ntSerialDataListener.isConnected()) {
-                controllerPort.writeBytes(new byte[]{(byte) 0x01}, 1);
+                if (hasCommandEntry.getBoolean(false)) {
+                    hasCommandEntry.setBoolean(false);
+                    byte[] data = commandEntry.getRaw(new byte[0]);
+                    controllerPort.writeBytes(data, data.length);
+                }
             }
             controllerPort.removeDataListener();
             controllerPort.closePort();
