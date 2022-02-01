@@ -51,6 +51,7 @@ public class Main {
 
         CustomController controller = CustomController.scan();
         if (controller != null) {
+            controller.open(responseEntry, hasResponseEntry);
             while (controller.isOpen()) {
                 if (hasCommandEntry.getBoolean(false)) {
                     controller.send(commandEntry.getRaw(new byte[0]));
