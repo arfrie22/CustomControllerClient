@@ -5,8 +5,6 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
-import java.util.Arrays;
-
 public class NTSerialDataListener implements SerialPortDataListener {
     private boolean isConnected = true;
     private final CustomController controller;

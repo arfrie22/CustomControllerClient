@@ -11,18 +11,9 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-
         inst.startClientTeam(467);
         inst.startDSClient();
         inst.startClient("localhost");
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException ex) {
-            System.out.println("interrupted");
-            return;
-        }
-
-        System.out.println(inst.isConnected());
         NetworkTable controllerTable = inst.getTable("controller");
 
         NetworkTableEntry robotConnectedEntry = controllerTable.getEntry("robotConnected"); // bool
@@ -47,6 +38,15 @@ public class Main {
             }
         }));
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            System.out.println("interrupted");
+            return;
+        }
+
+        System.out.println(inst.isConnected());
+
         clientConnectedEntry.setBoolean(true);
 
         CustomController controller = CustomController.scan();
@@ -58,7 +58,5 @@ public class Main {
                 }
             }
         }
-
-
     }
 }
