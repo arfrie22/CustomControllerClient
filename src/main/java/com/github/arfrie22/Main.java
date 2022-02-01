@@ -48,39 +48,16 @@ public class Main {
         }));
 
         clientConnectedEntry.setBoolean(true);
-        SerialPort controllerPort = null;
 
-        SerialPort[] ports = SerialPort.getCommPorts();
-        for (SerialPort port : ports) {
-            if (port.getPortDescription().equals("Controller CDC")) {
-                port.openPort();
-                byte[] buf = new byte[64];
-                port.writeBytes(new byte[]{(byte) 0x01}, 1);
-                Thread.sleep(100);
-                port.readBytes(buf, 64, 0);
-                int protocolVersion = (Byte.toUnsignedInt(buf[1]) << 8) | Byte.toUnsignedInt(buf[0]);
-                System.out.println("Protocol version: " + protocolVersion);
-
-                port.writeBytes(new byte[]{(byte) 0xFD}, 1);
-                Thread.sleep(100);
-                port.readBytes(buf, 64, 0);
-                int teamNumber = (Byte.toUnsignedInt(buf[1]) << 24) | (Byte.toUnsignedInt(buf[2]) << 16) | (Byte.toUnsignedInt(buf[3]) << 8) | Byte.toUnsignedInt(buf[4]);
-                System.out.println("Team number: " + teamNumber);
-
-                port.closePort();
-                controllerPort = port;
+        CustomController controller = CustomController.scan();
+        if (controller != null) {
+            while (controller.isOpen()) {
+                if (hasCommandEntry.getBoolean(false)) {
+                    controller.send(commandEntry.getRaw(new byte[0]));
+                }
             }
         }
 
-        if (controllerPort != null) {
-            controllerPort.openPort();
-            NTSerialDataListener ntSerialDataListener = new NTSerialDataListener(responseEntry, hasResponseEntry);
-            controllerPort.addDataListener(ntSerialDataListener);
-            while (ntSerialDataListener.isConnected()) {
-                controllerPort.writeBytes(new byte[]{(byte) 0x01}, 1);
-            }
-            controllerPort.removeDataListener();
-            controllerPort.closePort();
-        }
+
     }
 }

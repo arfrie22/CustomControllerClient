@@ -9,9 +9,14 @@ import java.util.Arrays;
 
 public class NTSerialDataListener implements SerialPortDataListener {
     private boolean isConnected = true;
+    private final CustomController controller;
+    private final NetworkTableEntry responseEntry;
+    private final NetworkTableEntry hasResponseEntry;
 
-    public NTSerialDataListener(NetworkTableEntry responseEntry, NetworkTableEntry hasResponseEntry) {
-
+    public NTSerialDataListener(CustomController controller, NetworkTableEntry responseEntry, NetworkTableEntry hasResponseEntry) {
+        this.controller = controller;
+        this.responseEntry = responseEntry;
+        this.hasResponseEntry = hasResponseEntry;
     }
 
     @Override
@@ -23,11 +28,13 @@ public class NTSerialDataListener implements SerialPortDataListener {
     public void serialEvent(SerialPortEvent serialPortEvent) {
         switch (serialPortEvent.getEventType()) {
             case SerialPort.LISTENING_EVENT_DATA_RECEIVED:
-                System.out.println(Arrays.toString(serialPortEvent.getReceivedData()));
+                this.responseEntry.setRaw(serialPortEvent.getReceivedData());
+                this.hasResponseEntry.setBoolean(true);
                 break;
 
             case SerialPort.LISTENING_EVENT_PORT_DISCONNECTED:
                 isConnected = false;
+                controller.close();
                 break;
 
             default:
