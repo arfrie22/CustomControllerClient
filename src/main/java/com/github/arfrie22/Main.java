@@ -12,10 +12,9 @@ public class Main {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
 
-        inst.startClient("localhost");
         inst.startClientTeam(467);
         inst.startDSClient();
-        
+
         try {
             Thread.sleep(10);
         } catch (InterruptedException ex) {
@@ -62,6 +61,9 @@ public class Main {
                     }
                 }
             }
+
+            System.out.println("No controller detected, trying again in 1 second");
+            Thread.sleep(1000);
         }
     }
 }
