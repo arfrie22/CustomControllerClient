@@ -1,6 +1,7 @@
-package com.github.arfrie22;
+package com.github.arfrie22.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.github.arfrie22.NTSerialDataListener;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 import java.util.Arrays;

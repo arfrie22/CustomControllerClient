@@ -3,6 +3,7 @@ package com.github.arfrie22;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import com.github.arfrie22.controller.CustomController;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class NTSerialDataListener implements SerialPortDataListener {

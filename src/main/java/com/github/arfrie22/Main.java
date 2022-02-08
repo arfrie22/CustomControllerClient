@@ -1,11 +1,9 @@
 package com.github.arfrie22;
 
-import com.fazecast.jSerialComm.SerialPort;
+import com.github.arfrie22.controller.CustomController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
