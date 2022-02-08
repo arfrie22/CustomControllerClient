@@ -1,6 +1,7 @@
 package com.github.arfrie22;
 
 import com.github.arfrie22.controller.CustomController;
+import com.github.arfrie22.controller.ScanResults;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -48,8 +49,9 @@ public class Main {
         clientConnectedEntry.setBoolean(true);
 
         while (true) {
-            CustomController controller = CustomController.scan();
-            if (controller != null) {
+            ScanResults scan = CustomController.scan();
+            if (scan.getValidControllers().length > 0) {
+                CustomController controller = scan.getValidControllers()[0];
                 controller.open(responseEntry, hasResponseEntry);
                 while (controller.isOpen()) {
                     if (hasCommandEntry.getBoolean(false)) {

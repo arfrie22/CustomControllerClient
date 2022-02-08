@@ -1,28 +1,40 @@
 package com.github.arfrie22.controller;
 
-class ScanResults {
-    CustomController[] validControllers;
-    CustomController[] invalidControllers;
-    CustomController[] allControllers;
+import com.fazecast.jSerialComm.SerialPort;
 
-    protected ScanResults(CustomController[] validControllers, CustomController[] invalidControllers) {
-        this.validControllers = validControllers;
-        this.invalidControllers = invalidControllers;
+public class ScanResults {
+    private final CustomController[] validControllers;
+    private final SerialPort[] validPorts;
+    private final SerialPort[] invalidPorts;
+    private final SerialPort[] allPorts;
 
-        this.allControllers = new CustomController[validControllers.length + invalidControllers.length];
-        System.arraycopy(validControllers, 0, allControllers, 0, validControllers.length);
-        System.arraycopy(invalidControllers, 0, allControllers, validControllers.length, invalidControllers.length);
+    protected ScanResults(SerialPort[] validPorts, SerialPort[] invalidPorts) throws InterruptedException {
+        this.validPorts = validPorts;
+        this.invalidPorts = invalidPorts;
+        this.validControllers = new CustomController[validPorts.length];
+
+        for (int i = 0; i < validPorts.length; i++) {
+            validControllers[i] = new CustomController(validPorts[i]);
+        }
+
+        this.allPorts = new SerialPort[validPorts.length + invalidPorts.length];
+        System.arraycopy(validPorts, 0, allPorts, 0, validPorts.length);
+        System.arraycopy(invalidPorts, 0, allPorts, validPorts.length, invalidPorts.length);
+    }
+
+    public SerialPort[] getValidPorts() {
+        return validPorts;
+    }
+
+    public SerialPort[] getInvalidPorts() {
+        return invalidPorts;
     }
 
     public CustomController[] getValidControllers() {
-        return  validControllers;
+        return validControllers;
     }
 
-    public CustomController[] getInvalidControllers() {
-        return invalidControllers;
-    }
-
-    public CustomController[] getAllControllers() {
-        return allControllers;
+    public SerialPort[] getAllPorts() {
+        return allPorts;
     }
 }

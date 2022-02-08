@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.github.arfrie22.NTSerialDataListener;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CustomController {
@@ -22,15 +23,21 @@ public class CustomController {
         return port.getPortDescription().contentEquals(new StringBuffer(new String(buf).substring(1, port.getPortDescription().length() + 1)));
     }
 
-    public static CustomController scan() throws InterruptedException {
+    public static ScanResults scan() throws InterruptedException {
+        ArrayList<SerialPort> validPorts = new ArrayList<>();
+        ArrayList<SerialPort> invalidPorts = new ArrayList<>();
+
         SerialPort[] ports = SerialPort.getCommPorts();
         for (SerialPort port : ports) {
             if (isCustomController(port)) {
-                return new CustomController(port);
+                validPorts.add(port);
+            } else {
+                invalidPorts.add(port);
             }
         }
 
-        return null;
+
+        return new ScanResults(validPorts.toArray(SerialPort[]::new), invalidPorts.toArray(SerialPort[]::new));
     }
 
     public CustomController(SerialPort port) throws InterruptedException {
