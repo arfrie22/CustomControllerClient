@@ -6,6 +6,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.util.Arrays;
+
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -22,20 +24,18 @@ public class Main {
         }
 
         System.out.println(inst.isConnected());
-        NetworkTable controllerTable = inst.getTable("controller");
+        NetworkTable controllerTable = inst.getTable("Controller");
 
-        NetworkTableEntry robotConnectedEntry = controllerTable.getEntry("robotConnected"); // bool
-        NetworkTableEntry clientConnectedEntry = controllerTable.getEntry("clientConnected"); // bool
-
-        NetworkTableEntry commandEntry = controllerTable.getEntry("command"); // raw bytes
+        NetworkTableEntry commandQueueEntry = controllerTable.getEntry("CommandQueue"); // raw bytes
+        NetworkTableEntry commandQueueLengthEntry = controllerTable.getEntry("CommandQueueLength"); // double array
         NetworkTableEntry hasCommandEntry = controllerTable.getEntry("hasCommand"); // bool
+
+        // TODO: Remove
         NetworkTableEntry responseEntry = controllerTable.getEntry("response"); // raw bytes
         NetworkTableEntry hasResponseEntry = controllerTable.getEntry("hasResponse"); // bool
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                Thread.sleep(200);
-                clientConnectedEntry.setBoolean(false);
                 Thread.sleep(200);
                 System.out.println("Shutting down...");
                 inst.close();
@@ -46,8 +46,6 @@ public class Main {
             }
         }));
 
-        clientConnectedEntry.setBoolean(true);
-
         while (true) {
             ScanResults scan = CustomController.scan();
             if (scan.getValidControllers().length > 0) {
@@ -55,8 +53,15 @@ public class Main {
                 controller.open(responseEntry, hasResponseEntry);
                 while (controller.isOpen()) {
                     if (hasCommandEntry.getBoolean(false)) {
-                        controller.send(commandEntry.getRaw(new byte[0]));
-                        commandEntry.setRaw(new byte[0]);
+                        byte[] queue = commandQueueEntry.getRaw(new byte[0]);
+                        double[] queueLength = commandQueueEntry.getDoubleArray(new double[0]);
+                        int queuePointer = 0;
+                        for (double length : queueLength) {
+                            controller.send(Arrays.copyOfRange(queue, queuePointer, queuePointer + (int) length - 1));
+                            queuePointer += (int) length;
+                        }
+                        commandQueueEntry.setRaw(new byte[0]);
+                        commandQueueLengthEntry.setDoubleArray(new double[0]);
                         hasCommandEntry.setBoolean(false);
                     }
                 }
