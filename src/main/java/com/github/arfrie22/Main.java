@@ -28,7 +28,7 @@ public class Main {
 
         NetworkTableEntry commandQueueEntry = controllerTable.getEntry("CommandQueue"); // raw bytes
         NetworkTableEntry commandQueueLengthEntry = controllerTable.getEntry("CommandQueueLength"); // double array
-        NetworkTableEntry hasCommandEntry = controllerTable.getEntry("hasCommand"); // bool
+        NetworkTableEntry hasCommandEntry = controllerTable.getEntry("HasCommand"); // bool
 
         // TODO: Remove
         NetworkTableEntry responseEntry = controllerTable.getEntry("response"); // raw bytes
