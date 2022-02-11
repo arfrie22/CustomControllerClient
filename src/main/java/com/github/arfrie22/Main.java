@@ -54,10 +54,11 @@ public class Main {
                 while (controller.isOpen()) {
                     if (hasCommandEntry.getBoolean(false)) {
                         byte[] queue = commandQueueEntry.getRaw(new byte[0]);
-                        double[] queueLength = commandQueueEntry.getDoubleArray(new double[0]);
+                        double[] queueLength = commandQueueLengthEntry.getDoubleArray(new double[0]);
                         int queuePointer = 0;
                         for (double length : queueLength) {
-                            controller.send(Arrays.copyOfRange(queue, queuePointer, queuePointer + (int) length - 1));
+                            byte[] data = Arrays.copyOfRange(queue, queuePointer, queuePointer + (int) length);
+                            controller.send(data);
                             queuePointer += (int) length;
                         }
                         commandQueueEntry.setRaw(new byte[0]);
