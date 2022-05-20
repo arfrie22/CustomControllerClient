@@ -59,6 +59,8 @@ public class CustomController {
         this.teamNumber = (Byte.toUnsignedInt(buf[1]) << 24) | (Byte.toUnsignedInt(buf[2]) << 16) | (Byte.toUnsignedInt(buf[3]) << 8) | Byte.toUnsignedInt(buf[4]);
         System.out.println("Team number: " + teamNumber);
 
+        System.out.println("Setting default brightness to 0x80");
+        port.writeBytes(new byte[]{(byte) 0x06, (byte) 0x04, (byte) 0x06, (byte) 0x80}, 4);
         port.closePort();
     }
 
